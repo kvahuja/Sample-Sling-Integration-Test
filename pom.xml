@@ -142,7 +142,7 @@
 						<keepJarRunning>false</keepJarRunning>
 						<server.ready.timeout.seconds>60</server.ready.timeout.seconds>
 						<sling.testing.timeout.multiplier>1.0</sling.testing.timeout.multiplier>
-						<server.ready.path.1>/:script src="system/sling.js"</server.ready.path.1>
+						<server.ready.path.1>/projects.html:src="/libs/cq/gui/components/common/wcm/clientlibs/wcm.js"</server.ready.path.1>
 						<start.bundles.timeout.seconds>30</start.bundles.timeout.seconds>
 						<bundle.install.timeout.seconds>20</bundle.install.timeout.seconds>
 						<!-- Define additional bundles to install by specifying the beginning 
@@ -151,6 +151,9 @@
 							they won't be installed. -->
 						<sling.additional.bundle.1>sample-sling-integration-test</sling.additional.bundle.1>
 						<sling.additional.bundle.2>jstl</sling.additional.bundle.2>
+						<launchpad.http.server.url>http://54.179.160.9:4502</launchpad.http.server.url>
+						<test.server.username>admin</test.server.username>
+						<test.server.password>admin</test.server.password>
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>

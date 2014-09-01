@@ -50,9 +50,12 @@ public class SampleIT extends SlingTestBase {
 	 * started. By retrieving the information for the Server URL, username and
 	 * password, the Sling instance will be automatically started.
 	 */
-	private SlingClient slingClient = new SlingClient(this.getServerBaseUrl(),
-			this.getServerUsername(), this.getServerPassword());
+	private SlingClient slingClient;
 
+	public SampleIT() {
+		System.out.println(System.getProperty("launchpad.http.server.url"));
+
+	}
 	/**
 	 * Execute before the actual test, this will be used to setup the test data
 	 * 
@@ -61,21 +64,44 @@ public class SampleIT extends SlingTestBase {
 	@Before
 	public void init() throws Exception {
 		log.info("init");
+		
+		log.info("base url: " + super.getServerBaseUrl());
+		log.info("usernmae: " + super.getServerUsername());
+		log.info("password: " + super.getServerPassword());
 
+		slingClient = new SlingClient(super.getServerBaseUrl(),
+				super.getServerUsername(), super.getServerPassword());
+		
+//		Assert.assertNotNull(slingClient);
+//		if (null == slingClient){
+//			log.info("sling client has not initialized");
+//		}
+		
 		log.info("Creating testing component...");
+		
 		if (!slingClient.exists("/apps/test")) {
+			log.info("apps/tests doesnt esists; creating it");
 			slingClient.mkdir("/apps/test");
 		}
 		if (!slingClient.exists("/apps/test/sample-test")) {
 			slingClient.mkdir("/apps/test/sample-test");
+			log.info("apps/tests/sample-test doesnt esists; creating it");
 		}
-		slingClient.upload("/apps/test/sample-test/sample-test.jsp",
-				SampleIT.class.getClassLoader()
-						.getResourceAsStream("sample-test.jsp"), -1, true);
+		
+		log.info("uploading sample-test.jar");
+		if (!slingClient.exists("/apps/test/sample-test/sample-test.jsp")) {
+			slingClient.upload("/apps/test/sample-test/sample-test.jsp",
+					SampleIT.class.getClassLoader()
+							.getResourceAsStream("sample-test.jsp"), -1, true);
+		}
+		
+		log.info(getRequestExecutor()
+				.execute(getRequestBuilder().buildGetRequest("/apps/test/sample-test.3.json")).getContent());
+
 		log.info(getRequestExecutor()
 				.execute(
 						getRequestBuilder().buildGetRequest(
-								"/apps/test/sample-test.3.json"))
+								"/apps/test/sample-test.3.json").withCredentials(super.getServerUsername(), super.getServerPassword()))
 				.assertStatus(200).getContent());
 
 		log.info("Creating testing content...");
@@ -88,7 +114,7 @@ public class SampleIT extends SlingTestBase {
 		log.info(getRequestExecutor()
 				.execute(
 						getRequestBuilder().buildGetRequest(
-								"/content/test/sample-test.json"))
+								"/content/test/sample-test.json").withCredentials(super.getServerUsername(), super.getServerPassword()))
 				.assertStatus(200).getContent());
 
 		log.info("Initialization successful");
@@ -108,10 +134,10 @@ public class SampleIT extends SlingTestBase {
 
 		RequestExecutor result = getRequestExecutor().execute(
 				getRequestBuilder().buildGetRequest(
-						"/content/test/sample-test.html"));
+						"/content/test/sample-test.html").withCredentials(super.getServerUsername(), super.getServerPassword()));
 		log.info(result.getContent());
 		result.assertStatus(200).assertContentContains("All Tests Succeeded");
 
 		log.info("testSample - TEST SUCCESSFUL");
-	}
+	}	
 }
